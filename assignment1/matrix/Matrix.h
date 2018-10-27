@@ -33,6 +33,10 @@ public:
 
 	Matrix& operator=(const Matrix& m) {
     if(&m != this) {
+      if(data != NULL) {
+        delete[] data;
+      }
+
       nrows = m.rows();
       ncols = m.cols();
       data = new double[nrows * ncols];
