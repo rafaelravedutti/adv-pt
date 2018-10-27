@@ -5,7 +5,7 @@ private:
   double *data;
   std::size_t nrows, ncols;
 public:
-	Matrix(std::size_t rows, std::size_t cols, double initValue) : nrows(rows), ncols(cols) {
+  Matrix(std::size_t rows, std::size_t cols, double initValue) : nrows(rows), ncols(cols) {
     data = new double[rows * cols];
 
     for(int i = 0; i < nrows; ++i) {
@@ -15,11 +15,11 @@ public:
     }
   }
 
-	~Matrix() {
+  ~Matrix() {
     delete[] data;
   }
 
-	Matrix(const Matrix& m) {
+  Matrix(const Matrix& m) {
     nrows = m.rows();
     ncols = m.cols();
     data = new double[nrows * ncols];
@@ -31,7 +31,7 @@ public:
     }
   }
 
-	Matrix& operator=(const Matrix& m) {
+  Matrix& operator=(const Matrix& m) {
     if(&m != this) {
       if(data != NULL) {
         delete[] data;
@@ -49,15 +49,15 @@ public:
     }
   }
 
-	double& operator()(std::size_t i, std::size_t j) {
+  double& operator()(std::size_t i, std::size_t j) {
     return data[i * ncols + j];
   }
 
-	const double& operator()(std::size_t i, std::size_t j) const {
+  const double& operator()(std::size_t i, std::size_t j) const {
     return data[i * ncols + j];
   }
 
-	bool operator ==(const Matrix& m) const {
+  bool operator ==(const Matrix& m) const {
     if(nrows != m.nrows || ncols != m.cols()) {
       return false;
     }
@@ -73,7 +73,7 @@ public:
     return true;
   }
 
-	bool operator !=(const Matrix& m) const {
+  bool operator !=(const Matrix& m) const {
     if(nrows != m.rows() || ncols != m.cols()) {
       return true;
     }
@@ -90,7 +90,7 @@ public:
 
   }
 
-	Matrix& operator +=(const Matrix& m) {
+  Matrix& operator +=(const Matrix& m) {
     if(nrows != m.nrows || ncols != m.cols()) {
       std::cout << "Cannot perform summation of matrix with different dimensions!" << std::endl;
     } else {
@@ -104,7 +104,7 @@ public:
     return *this;
   }
 
-	Matrix operator +(const Matrix& m) const {
+  Matrix operator +(const Matrix& m) const {
     Matrix result(nrows, ncols, 0.0);
 
     if(nrows != m.rows() || ncols != m.cols()) {
@@ -120,7 +120,7 @@ public:
     return result;
   }
 
-	Matrix& operator -=(const Matrix& m) {
+  Matrix& operator -=(const Matrix& m) {
     if(nrows != m.rows() || ncols != m.cols()) {
       std::cout << "Cannot perform subtraction of matrix with different dimensions!" << std::endl;
     } else {
@@ -134,7 +134,7 @@ public:
     return *this;
   }
 
-	Matrix operator -(const Matrix& m) const {
+  Matrix operator -(const Matrix& m) const {
     Matrix result(nrows, ncols, 0.0);
 
     if(nrows != m.rows() || ncols != m.cols()) {
@@ -150,7 +150,7 @@ public:
     return result;
   }
 
-	Matrix& operator *=(const Matrix& m) {
+  Matrix& operator *=(const Matrix& m) {
     double *old_data = data;
 
     if(ncols != m.rows()) {
@@ -175,7 +175,7 @@ public:
     return *this;
   }
 
-	Matrix operator *(const Matrix& m) const {
+  Matrix operator *(const Matrix& m) const {
     Matrix result(nrows, m.cols(), 0.0);
 
     if(ncols != m.rows()) {
@@ -193,15 +193,15 @@ public:
     return result;
   }
 
-	std::size_t rows() const {
+  std::size_t rows() const {
     return nrows;
   }
 
-	std::size_t cols() const {
+  std::size_t cols() const {
     return ncols;
   }
 
-	friend std::ostream& operator <<(std::ostream& output_stream, const Matrix& m) {
+  friend std::ostream& operator <<(std::ostream& output_stream, const Matrix& m) {
     for(int i = 0; i < m.rows(); ++i) {
       for(int j = 0; j < m.cols(); ++j) {
         output_stream << m(i, j) << " ";
@@ -213,7 +213,7 @@ public:
     return output_stream;
   }
 
-	friend std::istream& operator >>(std::istream& input_stream, Matrix& m) {
+  friend std::istream& operator >>(std::istream& input_stream, Matrix& m) {
     for(int i = 0; i < m.rows(); ++i) {
       for(int j = 0; j < m.cols(); ++j) {
         input_stream >> m(i, j);
