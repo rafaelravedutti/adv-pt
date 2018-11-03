@@ -3,7 +3,7 @@
 class Matrix {
 private:
   enum MatrixError {
-    ERR_SUCCESS, ERR_DIM
+    ERR_SUCCESS, ERR_DIM, ERR_OPER_DIM
   };
 
   std::size_t nrows, ncols;
@@ -16,6 +16,7 @@ public:
       data = new double[rows * cols];
     } else {
       data = nullptr;
+      error = MatrixError::ERR_DIM;
     }
 
     for(std::size_t i = 0; i < nrows; ++i) {
@@ -34,6 +35,7 @@ public:
       data = new double[m.rows() * m.cols()];
     } else {
       data = nullptr;
+      error = MatrixError::ERR_DIM;
     }
 
     for(std::size_t i = 0; i < nrows; ++i) {
@@ -106,7 +108,7 @@ public:
 
   Matrix& operator +=(const Matrix& m) {
     if(nrows != m.nrows || ncols != m.cols()) {
-      error = MatrixError::ERR_DIM;
+      error = MatrixError::ERR_OPER_DIM;
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < ncols; ++j) {
@@ -136,7 +138,7 @@ public:
 
   Matrix& operator -=(const Matrix& m) {
     if(nrows != m.rows() || ncols != m.cols()) {
-      error = MatrixError::ERR_DIM;
+      error = MatrixError::ERR_OPER_DIM;
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < ncols; ++j) {
@@ -168,7 +170,7 @@ public:
     double *old_data = data;
 
     if(ncols != m.rows()) {
-      error = MatrixError::ERR_DIM;
+      error = MatrixError::ERR_OPER_DIM;
     } else {
       data = new double[nrows * m.cols()];
 
@@ -246,6 +248,8 @@ public:
       case MatrixError::ERR_SUCCESS:
         return "No error found!";
       case MatrixError::ERR_DIM:
+        return "Matrix dimension is invalid!";
+      case MatrixError::ERR_OPER_DIM:
         return "Problem with dimensions size during operation!";
       default:
         return "Some error occurred!";

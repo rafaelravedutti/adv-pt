@@ -20,8 +20,8 @@ int main() {
 
   m3 = m1 * m2;
 
-  if(m3.rows() * m3.cols() == 0) {
-    std::cerr << "An error occurred during the matrix product!" << std::endl;
+  if(m3.has_error()) {
+    std::cerr << m3.error_message() << std::endl;
     return -1;
   }
 
