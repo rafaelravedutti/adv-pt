@@ -2,10 +2,22 @@
 
 class Matrix {
 private:
+  enum MatrixError {
+    ERR_SUCCESS, ERR_DIM
+  };
+
   std::size_t nrows, ncols;
   double *data;
+  MatrixError error = MatrixError::ERR_SUCCESS;
 public:
-  Matrix(std::size_t rows, std::size_t cols, double initValue) : nrows(rows), ncols(cols), data(new double[rows * cols]) {
+
+  Matrix(std::size_t rows, std::size_t cols, double initValue) : nrows(rows), ncols(cols) {
+    if(rows * cols != 0) {
+      data = new double[rows * cols];
+    } else {
+      data = nullptr;
+    }
+
     for(std::size_t i = 0; i < nrows; ++i) {
       for(std::size_t j = 0; j < ncols; ++j) {
         data[i * ncols + j] = initValue;
@@ -17,7 +29,13 @@ public:
     delete[] data;
   }
 
-  Matrix(const Matrix& m) : nrows(m.rows()), ncols(m.cols()), data(new double[m.rows() * m.cols()]) {
+  Matrix(const Matrix& m) : nrows(m.rows()), ncols(m.cols()) {
+    if(m.rows() * m.cols() != 0) {
+      data = new double[m.rows() * m.cols()];
+    } else {
+      data = nullptr;
+    }
+
     for(std::size_t i = 0; i < nrows; ++i) {
       for(std::size_t j = 0; j < ncols; ++j) {
         data[i * ncols + j] = m(i, j);
@@ -88,7 +106,7 @@ public:
 
   Matrix& operator +=(const Matrix& m) {
     if(nrows != m.nrows || ncols != m.cols()) {
-      std::cout << "Cannot perform summation of matrix with different dimensions!" << std::endl;
+      error = MatrixError::ERR_DIM;
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < ncols; ++j) {
@@ -104,7 +122,7 @@ public:
     Matrix result(nrows, ncols, 0.0);
 
     if(nrows != m.rows() || ncols != m.cols()) {
-      std::cout << "Cannot perform summation of matrix with different dimensions!" << std::endl;
+      return Matrix(0, 0, 0.0);
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < ncols; ++j) {
@@ -118,7 +136,7 @@ public:
 
   Matrix& operator -=(const Matrix& m) {
     if(nrows != m.rows() || ncols != m.cols()) {
-      std::cout << "Cannot perform subtraction of matrix with different dimensions!" << std::endl;
+      error = MatrixError::ERR_DIM;
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < ncols; ++j) {
@@ -134,7 +152,7 @@ public:
     Matrix result(nrows, ncols, 0.0);
 
     if(nrows != m.rows() || ncols != m.cols()) {
-      std::cout << "Cannot perform subtraction of matrix with different dimensions!" << std::endl;
+      return Matrix(0, 0, 0.0);
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < ncols; ++j) {
@@ -150,7 +168,7 @@ public:
     double *old_data = data;
 
     if(ncols != m.rows()) {
-      std::cout << "Number of columns for the first matrix and rows for the second matrix must be the same to perform product!" << std::endl;
+      error = MatrixError::ERR_DIM;
     } else {
       data = new double[nrows * m.cols()];
 
@@ -175,7 +193,7 @@ public:
     Matrix result(nrows, m.cols(), 0.0);
 
     if(ncols != m.rows()) {
-      std::cout << "Number of columns for the first matrix and rows for the second matrix must be the same to perform product!" << std::endl;
+      return Matrix(0, 0, 0.0);
     } else {
       for(std::size_t i = 0; i < nrows; ++i) {
         for(std::size_t j = 0; j < m.cols(); ++j) {
@@ -217,5 +235,20 @@ public:
     }
 
     return input_stream;
+  }
+
+  bool has_error() {
+    return (error != MatrixError::ERR_SUCCESS);
+  }
+
+  std::string error_message() {
+    switch(error) {
+      case MatrixError::ERR_SUCCESS:
+        return "No error found!";
+      case MatrixError::ERR_DIM:
+        return "Problem with dimensions size during operation!";
+      default:
+        return "Some error occurred!";
+    }
   }
 };
