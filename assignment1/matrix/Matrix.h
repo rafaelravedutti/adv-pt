@@ -2,14 +2,12 @@
 
 class Matrix {
 private:
-  double *data;
   std::size_t nrows, ncols;
+  double *data;
 public:
-  Matrix(std::size_t rows, std::size_t cols, double initValue) : nrows(rows), ncols(cols) {
-    data = new double[rows * cols];
-
-    for(int i = 0; i < nrows; ++i) {
-      for(int j = 0; j < ncols; ++j) {
+  Matrix(std::size_t rows, std::size_t cols, double initValue) : nrows(rows), ncols(cols), data(new double[rows * cols]) {
+    for(std::size_t i = 0; i < nrows; ++i) {
+      for(std::size_t j = 0; j < ncols; ++j) {
         data[i * ncols + j] = initValue;
       }
     }
@@ -19,13 +17,9 @@ public:
     delete[] data;
   }
 
-  Matrix(const Matrix& m) {
-    nrows = m.rows();
-    ncols = m.cols();
-    data = new double[nrows * ncols];
-
-    for(int i = 0; i < nrows; ++i) {
-      for(int j = 0; j < ncols; ++j) {
+  Matrix(const Matrix& m) : nrows(m.rows()), ncols(m.cols()), data(new double[m.rows() * m.cols()]) {
+    for(std::size_t i = 0; i < nrows; ++i) {
+      for(std::size_t j = 0; j < ncols; ++j) {
         data[i * ncols + j] = m(i, j);
       }
     }
@@ -41,12 +35,14 @@ public:
       ncols = m.cols();
       data = new double[nrows * ncols];
 
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < ncols; ++j) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < ncols; ++j) {
           data[i * ncols + j] = m(i, j);
         }
       }
     }
+
+    return *this;
   }
 
   double& operator()(std::size_t i, std::size_t j) {
@@ -62,8 +58,8 @@ public:
       return false;
     }
 
-    for(int i = 0; i < nrows; ++i) {
-      for(int j = 0; j < ncols; ++j) {
+    for(std::size_t i = 0; i < nrows; ++i) {
+      for(std::size_t j = 0; j < ncols; ++j) {
         if(data[i * ncols + j] != m(i, j)) {
           return false;
         }
@@ -78,8 +74,8 @@ public:
       return true;
     }
 
-    for(int i = 0; i < nrows; ++i) {
-      for(int j = 0; j < ncols; ++j) {
+    for(std::size_t i = 0; i < nrows; ++i) {
+      for(std::size_t j = 0; j < ncols; ++j) {
         if(data[i * ncols + j] != m(i, j)) {
           return true;
         }
@@ -94,8 +90,8 @@ public:
     if(nrows != m.nrows || ncols != m.cols()) {
       std::cout << "Cannot perform summation of matrix with different dimensions!" << std::endl;
     } else {
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < ncols; ++j) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < ncols; ++j) {
           data[i * ncols + j] += m(i, j);
         }
       }
@@ -110,8 +106,8 @@ public:
     if(nrows != m.rows() || ncols != m.cols()) {
       std::cout << "Cannot perform summation of matrix with different dimensions!" << std::endl;
     } else {
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < ncols; ++j) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < ncols; ++j) {
           result(i, j) = data[i * ncols + j] + m(i, j);
         }
       }
@@ -124,8 +120,8 @@ public:
     if(nrows != m.rows() || ncols != m.cols()) {
       std::cout << "Cannot perform subtraction of matrix with different dimensions!" << std::endl;
     } else {
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < ncols; ++j) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < ncols; ++j) {
           data[i * ncols + j] -= m(i, j);
         }
       }
@@ -140,8 +136,8 @@ public:
     if(nrows != m.rows() || ncols != m.cols()) {
       std::cout << "Cannot perform subtraction of matrix with different dimensions!" << std::endl;
     } else {
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < ncols; ++j) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < ncols; ++j) {
           result(i, j) = data[i * ncols + j] - m(i, j);
         }
       }
@@ -158,11 +154,11 @@ public:
     } else {
       data = new double[nrows * m.cols()];
 
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < m.cols(); ++j) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < m.cols(); ++j) {
           data[i * m.cols() + j] = 0.0;
 
-          for(int k = 0; k < ncols; ++k) {
+          for(std::size_t k = 0; k < ncols; ++k) {
             data[i * m.cols() + j] += old_data[i * ncols + k] * m(k, j);
           }
         }
@@ -181,9 +177,9 @@ public:
     if(ncols != m.rows()) {
       std::cout << "Number of columns for the first matrix and rows for the second matrix must be the same to perform product!" << std::endl;
     } else {
-      for(int i = 0; i < nrows; ++i) {
-        for(int j = 0; j < m.cols(); ++j) {
-          for(int k = 0; k < ncols; ++k) {
+      for(std::size_t i = 0; i < nrows; ++i) {
+        for(std::size_t j = 0; j < m.cols(); ++j) {
+          for(std::size_t k = 0; k < ncols; ++k) {
             result(i, j) += data[i * ncols + k] * m(k, j);
           }
         }
@@ -202,8 +198,8 @@ public:
   }
 
   friend std::ostream& operator <<(std::ostream& output_stream, const Matrix& m) {
-    for(int i = 0; i < m.rows(); ++i) {
-      for(int j = 0; j < m.cols(); ++j) {
+    for(std::size_t i = 0; i < m.rows(); ++i) {
+      for(std::size_t j = 0; j < m.cols(); ++j) {
         output_stream << m(i, j) << " ";
       }
 
@@ -214,8 +210,8 @@ public:
   }
 
   friend std::istream& operator >>(std::istream& input_stream, Matrix& m) {
-    for(int i = 0; i < m.rows(); ++i) {
-      for(int j = 0; j < m.cols(); ++j) {
+    for(std::size_t i = 0; i < m.rows(); ++i) {
+      for(std::size_t j = 0; j < m.cols(); ++j) {
         input_stream >> m(i, j);
       }
     }
