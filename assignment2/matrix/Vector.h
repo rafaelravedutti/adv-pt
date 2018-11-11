@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <numeric>
 
 template<typename T>
 class Vector {
@@ -256,13 +257,12 @@ public:
 
   /* Returns the L2 norm for the vector */
   double l2Norm() const {
-    double norm = 0.0;
-
-    for(std::size_t i = 0; i < size_; ++i) {
-      norm += data[i] * data[i];
-    }
-
-    return sqrt(norm);
+    /* The norm is calculated by performing the summation of the square of
+       each element in the vector, and then the square root of the summation */
+    return sqrt(std::accumulate(
+      data, data + size_, 0.0,
+      [](T a, T b) { return a + (b * b); }
+    ));
   }
 
   /* Return the number of rows */
