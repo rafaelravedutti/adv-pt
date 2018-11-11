@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "Matrix.h"
 #include "Vector.h"
@@ -54,9 +55,12 @@ void testFullMatrix (const int numGridPoints) {
 
 	std::cout << "Initialization complete\n";
 
-	// TODO: start timing
+  auto start = std::chrono::system_clock::now();
 	solve(A, b, u);
-	// TODO: end timing and print elapsed time
+  auto end = std::chrono::system_clock::now();
+
+  std::chrono::duration<double> elapsed = end - start;
+  std::cout << "Elapsed time: " << elapsed.count() << "s" << std::endl;
 }
 
 void testStencil (const int numGridPoints) {
