@@ -1,8 +1,11 @@
 #include <iostream>
 #include "Vector.h"
+#include "MatrixLike.h"
+
+#pragma once
 
 template<typename T>
-class Matrix {
+class Matrix : public MatrixLike<T, Matrix<T>> {
 private:
   /* Possible errors for the matrix class */
   enum MatrixError {
@@ -93,12 +96,12 @@ public:
   }
 
   /* Return reference from the specified index */
-  T& operator()(std::size_t i, std::size_t j) {
+  inline T& operator()(int i, int j) {
     return data[i * ncols + j];
   }
 
   /* Return element value from the specified index */
-  const T& operator()(std::size_t i, std::size_t j) const {
+  inline const T& operator()(int i, int j) const {
     return data[i * ncols + j];
   }
 
@@ -301,8 +304,6 @@ public:
     } else {
       /* Go through each element of the result vector */
       for(std::size_t i = 0; i < nrows; ++i) {
-        result(i) = 0.0;
-
         /* Perform the vector product by going through all the j columns in the
            current line i for the matrix, and through all the j lines in the
            vector, the result is the summation of the products of each iteration */
@@ -316,9 +317,9 @@ public:
   }
 
   /* Returns the inverse diagonal of the matrix */
-  Matrix<double> inverseDiagonal() const {
+  Matrix<T> inverseDiagonal() const {
     /* Result matrix */
-    Matrix<double> result(nrows, ncols, 0.0);
+    Matrix<T> result(nrows, ncols, 0.0);
 
     /* Go through each element of the matrix diagonal and change their value
        in the result matrix */

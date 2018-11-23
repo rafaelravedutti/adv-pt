@@ -1,9 +1,8 @@
-#ifndef __VECTOR_H__
-#define __VECTOR_H__
-
 #include <iostream>
 #include <math.h>
 #include <numeric>
+
+#pragma once
 
 template<typename T>
 class Vector {
@@ -311,5 +310,3 @@ public:
     }
   }
 };
-
-#endif
