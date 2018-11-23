@@ -69,7 +69,11 @@ void testStencil (const int numGridPoints) {
 
   std::cout << "Starting stencil solver for " << numGridPoints << " grid points" << std::endl;
 
-  Stencil<double> ASten({ { 0, 1. } }, { { -1, 1. / hxSq },{ 0, -2. / hxSq },{ 1, 1. / hxSq } });
+  Stencil<double> ASten(
+    { { 0, 1. } },
+    { { -1, 1. / hxSq },{ 0, -2. / hxSq },{ 1, 1. / hxSq } }
+  );
+
   Vector<double> u(numGridPoints, 0.);
   Vector<double> b(numGridPoints, 0.);
 

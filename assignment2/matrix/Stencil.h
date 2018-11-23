@@ -21,7 +21,7 @@ public:
   Stencil(const Stencil & o) : boundaryStencil_(o.boundaryStencil_), innerStencil_(o.innerStencil_) {
   }
 
-  Stencil(Stencil && o) noexcept;
+  Stencil(Stencil && o) : boundaryStencil_(o.boundaryStencil_), innerStencil_(o.innerStencil_) {};
 
   ~Stencil( ) noexcept override { }
 
@@ -30,7 +30,10 @@ public:
     innerStencil_ = o.innerStencil_;
   }
 
-  Stencil& operator=(Stencil && o) noexcept;
+  Stencil& operator=(Stencil && o) {
+    boundaryStencil_ = o.boundaryStencil_;
+    innerStencil_ = o.innerStencil_;
+  }
 
 	// HINT: stencil entries are stored as offset/coefficient pair, that is the offset specifies which element of a
 	// vector, relative to the current index, is to be regarded. It is then multiplied with the according coefficient.
@@ -53,26 +56,36 @@ public:
   }
 
   Stencil<T> inverseDiagonal( ) const {
-    auto boundary_entries = boundaryStencil_;
-    auto inner_entries = innerStencil_;
-
-    auto boundary_it = std::find_if(boundary_entries.begin(), boundary_entries.end(),
+    auto boundary_it = std::find_if(boundaryStencil_.begin(), boundaryStencil_.end(),
       [] (StencilEntry<T> const &elem) {
         return elem.first == 0;
       }
     );
 
-    auto inner_it = std::find_if(inner_entries.begin(), inner_entries.end(),
+    auto inner_it = std::find_if(innerStencil_.begin(), innerStencil_.end(),
       [] (StencilEntry<T> const &elem) {
         return elem.first == 0;
       }
     );
 
-    boundary_it->second = 1.0 / boundary_it->second;
-    inner_it->second = 1.0 / inner_it->second;
-
-    return Stencil(boundary_entries, inner_entries);
+    return Stencil({{0, 1.0 / boundary_it->second}}, {{0, 1.0 / inner_it->second}});
   };
+
+  friend std::ostream& operator <<(std::ostream& output_stream, const Stencil<T>& st) {
+    std::cout << "BOUNDARY = {";
+    for(auto elem : st.boundaryStencil_) {
+      std::cout << "<" << elem.first << ", " << elem.second << ">";
+    }
+    std::cout << "}" << std::endl;
+
+    std::cout << "INNER = {";
+    for(auto elem : st.innerStencil_) {
+      std::cout << "<" << elem.first << ", " << elem.second << ">";
+    }
+    std::cout << "}" << std::endl;
+
+    return output_stream;
+  }
 
 protected:
 	// containers for the stencil entries -> boundary stencils represent the first and last rows of a corresponding
