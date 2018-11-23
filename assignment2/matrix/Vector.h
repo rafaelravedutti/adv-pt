@@ -1,3 +1,4 @@
+#include <functional>
 #include <iostream>
 #include <math.h>
 #include <numeric>
@@ -37,6 +38,26 @@ public:
        given initial value */
     for(std::size_t i = 0; i < size_; ++i) {
       data[i] = initValue;
+    }
+  }
+
+  /* Vector constructor */
+  Vector(std::size_t elements, std::function<T(std::size_t)> initFunc) : size_(elements) {
+    /* If none of the dimensions is zero, allocate the data and assign it to
+       the data pointer */
+    if(size_ != 0) {
+      data = new T[size_];
+    /* Otherwise, assign nullptr to the data pointer and change the error state
+       to dimension error */
+    } else {
+      data = nullptr;
+      error = VectorError::ERR_DIM;
+    }
+
+    /* Go through the data elements and fill all the positions with the
+       given initial value */
+    for(std::size_t i = 0; i < size_; ++i) {
+      data[i] = initFunc(i);
     }
   }
 

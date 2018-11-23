@@ -32,31 +32,29 @@ void solve (const MatrixLike<T, MatrixImpl>& A, const Vector<T>& b, Vector<T>& u
 }
 
 void testFullMatrix (const int numGridPoints) {
-	const double hx = 1. / (numGridPoints - 1);
-	const double hxSq = hx * hx;
+  const double hx = 1. / (numGridPoints - 1);
+  const double hxSq = hx * hx;
 
-	std::cout << "Starting full matrix solver for " << numGridPoints << " grid points" << std::endl;
+  std::cout << "Starting full matrix solver for " << numGridPoints << " grid points" << std::endl;
 
-	Matrix<double> A(numGridPoints, numGridPoints, 0.);
-	Vector<double> u(numGridPoints, 0.);
-	Vector<double> b(numGridPoints, 0.);
+  Matrix<double> A(numGridPoints, numGridPoints, 0.);
+  Vector<double> u(numGridPoints, 0.);
+  Vector<double> b(numGridPoints, [numGridPoints] (size_t x) {
+    return sin(2. * PI * (x / (double)(numGridPoints - 1)));
+  });
 
-	A(0, 0) = 1.;
-	for (int x = 1; x < numGridPoints - 1; ++x) {
-		A(x, x - 1) = 1. / hxSq;
-		A(x, x) = -2. / hxSq;
-		A(x, x + 1) = 1. / hxSq;
-	}
-	A(numGridPoints - 1, numGridPoints - 1) = 1.;
+  A(0, 0) = 1.;
+  for (int x = 1; x < numGridPoints - 1; ++x) {
+    A(x, x - 1) = 1. / hxSq;
+    A(x, x) = -2. / hxSq;
+    A(x, x + 1) = 1. / hxSq;
+  }
+  A(numGridPoints - 1, numGridPoints - 1) = 1.;
 
-	for (int x = 0; x < numGridPoints; ++x) {
-		b(x) = sin(2. * PI * (x / (double)(numGridPoints - 1)));
-	}
-
-	std::cout << "Initialization complete\n";
+  std::cout << "Initialization complete\n";
 
   auto start = std::chrono::system_clock::now();
-	solve(A, b, u);
+  solve(A, b, u);
   auto end = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed = end - start;
@@ -75,11 +73,9 @@ void testStencil (const int numGridPoints) {
   );
 
   Vector<double> u(numGridPoints, 0.);
-  Vector<double> b(numGridPoints, 0.);
-
-  for (int x = 0; x < numGridPoints; ++x) {
-    b(x) = sin(2. * PI * (x / (double)(numGridPoints - 1)));
-  }
+  Vector<double> b(numGridPoints, [numGridPoints] (size_t x) {
+    return sin(2. * PI * (x / (double)(numGridPoints - 1)));
+  });
 
   std::cout << "Initialization complete\n";
 
