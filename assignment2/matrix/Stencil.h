@@ -39,15 +39,22 @@ public:
 	// vector, relative to the current index, is to be regarded. It is then multiplied with the according coefficient.
 	// All of these expressions are evaluated and then summed up to get the final result.
   Vector<T, nrows> operator* (const Vector<T, nrows> & o) const {
+    /* Result vector */
     Vector<T, nrows> result(0.0);
 
+    /* Go through each pair of the boundary entries */
     for(auto elem : boundaryStencil_) {
+      /* Apply stencil for start boundary (position 0) */
       result(0) += o(elem.first) * elem.second;
+      /* Apply stencil for end boundary (position nrows - 1) */
       result(nrows - 1) += o(nrows - 1 + elem.first) * elem.second;
     }
 
+    /* Go through each element of the vector */
     for(std::size_t i = 1; i < nrows - 1; ++i) {
+      /* Go through each pair of the inner entries */
       for(auto elem : innerStencil_) {
+        /* Apply the stencil for current vector element */
         result(i) += o(i + elem.first) * elem.second;
       }
     }
@@ -56,18 +63,21 @@ public:
   }
 
   Stencil<T, nrows, ncols> inverseDiagonal( ) const {
+    /* Find boundary pair where the first element (offset) is zero */
     auto boundary_it = std::find_if(boundaryStencil_.begin(), boundaryStencil_.end(),
       [] (StencilEntry<T> const &elem) {
         return elem.first == 0;
       }
     );
 
+    /* Find inner pair where the first element (offset) is zero */
     auto inner_it = std::find_if(innerStencil_.begin(), innerStencil_.end(),
       [] (StencilEntry<T> const &elem) {
         return elem.first == 0;
       }
     );
 
+    /* Return stencil with inverse values of the zero offsets (diagonal) */
     return Stencil({{0, 1.0 / boundary_it->second}}, {{0, 1.0 / inner_it->second}});
   };
 
