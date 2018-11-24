@@ -169,7 +169,7 @@ public:
     /* The norm is calculated by performing the summation of the square of
        each element in the vector, and then the square root of the summation */
     return sqrt(std::accumulate(
-      data, data + size_, 0.0,
+      data.begin(), data.end(), 0.0,
       [](T a, T b) { return a + (b * b); }
     ));
   }
