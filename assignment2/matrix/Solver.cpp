@@ -7,9 +7,11 @@
 
 #define PI 3.141592653589793
 
-template<typename T, class MatrixImpl>
-void solve (const MatrixLike<T, MatrixImpl>& A, const Vector<T>& b, Vector<T>& u) {
-	const size_t numGridPoints = u.size( );
+template<typename T, class MatrixImpl, std::size_t numGridPoints>
+void solve (
+  const MatrixLike<T, MatrixImpl, numGridPoints, numGridPoints>& A,
+  const Vector<T, numGridPoints>& b,
+  Vector<T, numGridPoints>& u) {
 
 	double initRes = (b - A * u).l2Norm( ); // determine the initial residual
 	double curRes = initRes;
@@ -31,20 +33,21 @@ void solve (const MatrixLike<T, MatrixImpl>& A, const Vector<T>& b, Vector<T>& u
 	std::cout << "Residual after iteration " << curIt << ":\t" << curRes << std::endl << std::endl; // print the final number of iterations and the final residual
 }
 
-void testFullMatrix (const int numGridPoints) {
+template<std::size_t numGridPoints>
+void testFullMatrix () {
   const double hx = 1. / (numGridPoints - 1);
   const double hxSq = hx * hx;
 
   std::cout << "Starting full matrix solver for " << numGridPoints << " grid points" << std::endl;
 
-  Matrix<double> A(numGridPoints, numGridPoints, 0.);
-  Vector<double> u(numGridPoints, 0.);
-  Vector<double> b(numGridPoints, [numGridPoints] (size_t x) {
+  Matrix<double, numGridPoints, numGridPoints> A(0.);
+  Vector<double, numGridPoints> u(0.);
+  Vector<double, numGridPoints> b([] (size_t x) {
     return sin(2. * PI * (x / (double)(numGridPoints - 1)));
   });
 
   A(0, 0) = 1.;
-  for (int x = 1; x < numGridPoints - 1; ++x) {
+  for (std::size_t x = 1; x < numGridPoints - 1; ++x) {
     A(x, x - 1) = 1. / hxSq;
     A(x, x) = -2. / hxSq;
     A(x, x + 1) = 1. / hxSq;
@@ -61,19 +64,20 @@ void testFullMatrix (const int numGridPoints) {
   std::cout << "Elapsed time: " << elapsed.count() << "s" << std::endl;
 }
 
-void testStencil (const int numGridPoints) {
+template<std::size_t numGridPoints>
+void testStencil () {
   const double hx = 1. / (numGridPoints - 1);
   const double hxSq = hx * hx;
 
   std::cout << "Starting stencil solver for " << numGridPoints << " grid points" << std::endl;
 
-  Stencil<double> ASten(
+  Stencil<double, numGridPoints, numGridPoints> ASten(
     { { 0, 1. } },
     { { -1, 1. / hxSq },{ 0, -2. / hxSq },{ 1, 1. / hxSq } }
   );
 
-  Vector<double> u(numGridPoints, 0.);
-  Vector<double> b(numGridPoints, [numGridPoints] (size_t x) {
+  Vector<double, numGridPoints> u(0.);
+  Vector<double, numGridPoints> b([] (size_t x) {
     return sin(2. * PI * (x / (double)(numGridPoints - 1)));
   });
 
@@ -88,17 +92,18 @@ void testStencil (const int numGridPoints) {
 }
 
 int main(int argc, char** argv) {
-	testFullMatrix( 32 );
-	testStencil( 32 );
+	testFullMatrix<32>();
+	testStencil<32>();
 
-	testFullMatrix( 17 );
-	testStencil( 17 );
+	testFullMatrix<17>();
+	testStencil<17>();
 
-	testFullMatrix( 33 );
-	testStencil( 33 );
-	testFullMatrix( 65 );
-	testStencil( 65 );
+	testFullMatrix<33>();
+	testStencil<33>();
 
-	testFullMatrix( 129 );
-	testStencil( 129 );
+	testFullMatrix<65>();
+	testStencil<65>();
+
+	testFullMatrix<129>();
+	testStencil<129>();
 }
