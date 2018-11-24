@@ -169,7 +169,7 @@ public:
     for(std::size_t i = 0; i < nrows; ++i) {
       for(std::size_t j = 0; j < mncols; ++j) {
         /* Current element of the result matrix is set to zero by default */
-        data[i * m.cols() + j] = 0.0;
+        data[i * mncols + j] = 0.0;
 
         /* Perform the matrix product by going through all the k columns in the
            current line i for the first matrix, and through all the k lines in the
@@ -192,7 +192,7 @@ public:
 
     /* Go through each element of the result matrix */
     for(std::size_t i = 0; i < nrows; ++i) {
-      for(std::size_t j = 0; j < m.cols(); ++j) {
+      for(std::size_t j = 0; j < mncols; ++j) {
         /* Perform the matrix product by going through all the k columns in the
            current line i for the first matrix, and through all the k lines in the
            j column for the second matrix, the result is the summation of the
