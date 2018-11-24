@@ -10,8 +10,8 @@
 template<typename T>
 using StencilEntry = std::pair<int, T>; // convenience type for stencil entries
 
-template<typename T>
-class Stencil : public MatrixLike<T, Stencil<T>> {
+template<typename T, std::size_t nrows, std::size_t ncols>
+class Stencil : public MatrixLike<T, Stencil<T, nrows, ncols>, nrows, ncols> {
 public:
   Stencil(const std::vector<StencilEntry<T> >& boundaryEntries, const std::vector<StencilEntry<T> >& innerEntries)
     : boundaryStencil_(boundaryEntries), innerStencil_(innerEntries) { }
@@ -38,15 +38,15 @@ public:
 	// HINT: stencil entries are stored as offset/coefficient pair, that is the offset specifies which element of a
 	// vector, relative to the current index, is to be regarded. It is then multiplied with the according coefficient.
 	// All of these expressions are evaluated and then summed up to get the final result.
-  Vector<T> operator* (const Vector<T> & o) const {
-    Vector<T> result(o.size(), 0.0);
+  Vector<T, nrows> operator* (const Vector<T, nrows> & o) const {
+    Vector<T, nrows> result(0.0);
 
     for(auto elem : boundaryStencil_) {
       result(0) += o(elem.first) * elem.second;
-      result(o.size() - 1) += o(o.size() - 1 + elem.first) * elem.second;
+      result(nrows - 1) += o(nrows - 1 + elem.first) * elem.second;
     }
 
-    for(std::size_t i = 1; i < o.size() - 1; ++i) {
+    for(std::size_t i = 1; i < nrows - 1; ++i) {
       for(auto elem : innerStencil_) {
         result(i) += o(i + elem.first) * elem.second;
       }
@@ -55,7 +55,7 @@ public:
     return result;
   }
 
-  Stencil<T> inverseDiagonal( ) const {
+  Stencil<T, nrows, ncols> inverseDiagonal( ) const {
     auto boundary_it = std::find_if(boundaryStencil_.begin(), boundaryStencil_.end(),
       [] (StencilEntry<T> const &elem) {
         return elem.first == 0;
@@ -70,22 +70,6 @@ public:
 
     return Stencil({{0, 1.0 / boundary_it->second}}, {{0, 1.0 / inner_it->second}});
   };
-
-  friend std::ostream& operator <<(std::ostream& output_stream, const Stencil<T>& st) {
-    std::cout << "BOUNDARY = {";
-    for(auto elem : st.boundaryStencil_) {
-      std::cout << "<" << elem.first << ", " << elem.second << ">";
-    }
-    std::cout << "}" << std::endl;
-
-    std::cout << "INNER = {";
-    for(auto elem : st.innerStencil_) {
-      std::cout << "<" << elem.first << ", " << elem.second << ">";
-    }
-    std::cout << "}" << std::endl;
-
-    return output_stream;
-  }
 
 protected:
 	// containers for the stencil entries -> boundary stencils represent the first and last rows of a corresponding
