@@ -15,7 +15,7 @@ public:
     /* Check for matrix dimensions */
     static_assert(
       nrows >= 0 && ncols >= 0,
-      "Matrix dimensions must be higher than zero");
+      "Matrix dimensions must be higher or equal than zero");
 
     /* Go through the data elements and fill all the positions with the
        given initial value */
