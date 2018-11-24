@@ -13,6 +13,9 @@ private:
 public:
   /* Vector constructor */
   Vector(T initValue) {
+    /* Check for vector dimension */
+    static_assert(size_ >= 0, "Vector size must be higher or equal than zero");
+
     /* Go through the data elements and fill all the positions with the
        given initial value */
     for(std::size_t i = 0; i < size_; ++i) {
@@ -22,6 +25,9 @@ public:
 
   /* Vector constructor */
   Vector(std::function<T(std::size_t)> initFunc) {
+    /* Check for vector dimension */
+    static_assert(size_ >= 0, "Vector size must be higher or equal than zero");
+
     /* Go through the data elements and fill all the positions with the
        given initial value */
     for(std::size_t i = 0; i < size_; ++i) {

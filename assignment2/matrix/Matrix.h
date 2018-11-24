@@ -12,6 +12,11 @@ private:
 public:
   /* Matrix constructor */
   Matrix(T initValue) {
+    /* Check for matrix dimensions */
+    static_assert(
+      nrows >= 0 && ncols >= 0,
+      "Matrix dimensions must be higher than zero");
+
     /* Go through the data elements and fill all the positions with the
        given initial value */
     for(std::size_t i = 0; i < nrows; ++i) {
