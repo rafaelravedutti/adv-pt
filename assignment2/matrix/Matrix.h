@@ -249,8 +249,10 @@ public:
   }
 
   /* Input and output operators */
-  friend std::ostream& operator <<(std::ostream& output_stream, const Matrix<T, nrows, ncols>& m);
-  friend std::istream& operator >>(std::istream& input_stream, Matrix<T, nrows, ncols>& m);
+  template<typename mT, std::size_t mnrows, std::size_t mncols>
+  friend std::ostream& operator <<(std::ostream& output_stream, const Matrix<mT, mnrows, mncols>& m);
+  template<typename mT, std::size_t mnrows, std::size_t mncols>
+  friend std::istream& operator >>(std::istream& input_stream, Matrix<mT, mnrows, mncols>& m);
 };
 
 

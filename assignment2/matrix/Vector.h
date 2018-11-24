@@ -180,8 +180,10 @@ public:
   }
 
   /* Input and output operators */
-  friend std::ostream& operator <<(std::ostream& output_stream, const Vector<T, size_>& v);
-  friend std::istream& operator >>(std::istream& input_stream, Vector<T, size_>& v);
+  template<typename vT, std::size_t vsize_>
+  friend std::ostream& operator <<(std::ostream& output_stream, const Vector<vT, vsize_>& v);
+  template<typename vT, std::size_t vsize_>
+  friend std::istream& operator >>(std::istream& input_stream, Vector<vT, vsize_>& v);
 };
 
 /* Print vector data to the output stream */
